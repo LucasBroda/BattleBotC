@@ -3,7 +3,8 @@
 #include <iostream>
 #include <thread>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   BC_Connection *conn = bc_connect("127.0.0.1", 8080);
 
   bc_get_world_info(conn);
@@ -23,7 +24,8 @@ int main(int argc, char *argv[]) {
             << std::endl;
   BC_List *list = bc_radar_ping(conn);
 
-  do {
+  do
+  {
     BC_MapObject *map_object = (BC_MapObject *)bc_ll_value(list);
     std::cout << "map_object x=" << map_object->position.x
               << ", y=" << map_object->position.y << std::endl;

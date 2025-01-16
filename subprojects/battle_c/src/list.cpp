@@ -6,36 +6,45 @@ LinkedList *LinkedList::Prev() const { return prev_; }
 
 void *LinkedList::Value() const { return value_; }
 
-LinkedList *LinkedList::Rewind() {
+LinkedList *LinkedList::Rewind()
+{
   LinkedList *current = this;
-  while (current->prev_ != nullptr) {
+  while (current->prev_ != nullptr)
+  {
     current = current->prev_;
   }
   return current;
 }
 
-LinkedList *LinkedList::WalkToEnd() {
+LinkedList *LinkedList::WalkToEnd()
+{
   LinkedList *current = this;
-  while (current->next_ != nullptr) {
+  while (current->next_ != nullptr)
+  {
     current = current->next_;
   }
   return current;
 }
 
-void LinkedList::Free(LinkedList *linked_list) {
+void LinkedList::Free(LinkedList *linked_list)
+{
   LinkedList *current = linked_list->Rewind();
-  while (current != nullptr) {
+  while (current != nullptr)
+  {
     LinkedList *temp = current;
     current = current->Next();
     delete temp;
   }
 }
 
-void LinkedList::Add(LinkedList *next) {
-  if (this != nullptr) {
+void LinkedList::Add(LinkedList *next)
+{
+  if (this != nullptr)
+  {
     this->next_ = next;
   }
-  if (next != nullptr) {
+  if (next != nullptr)
+  {
     next->prev_ = this;
   }
 }
