@@ -181,4 +181,9 @@ void bc_set_game_started_handler(BC_Connection *connection,
   TCPClient *client = (TCPClient *)connection;
   client->SetGameStartedHandler(game_started_handler);
 }
+
+void bc_disconnect(BC_Connection *connection) {
+  TCPClient *client = (TCPClient *)connection;
+  client->Stop();
+}
 }

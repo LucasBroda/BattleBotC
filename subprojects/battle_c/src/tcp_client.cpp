@@ -7,7 +7,7 @@
 #include <string>
 
 void TCPClient::Handle() {
-  for (;;) {
+  while (this->is_running_) {
     uint8_t magic;
     uint32_t message_size;
     size_t len;
@@ -93,7 +93,7 @@ void TCPClient::SendQueue() {
   boost::system::error_code error;
   std::unique_lock<std::mutex> lk(this->cv_sendq_m);
 
-  while (true) {
+  while (this->is_running_) {
     while (this->sendq.empty()) {
       cv_sendq.wait(lk);
     }
@@ -143,4 +143,10 @@ void TCPClient::SetGameEndedHandler(
 
 void TCPClient::SetGameStartedHandler(void (*game_started_handler)()) {
   this->game_started_handler = game_started_handler;
+}
+
+void TCPClient::Stop() {
+  this->is_running_ = false;
+  this->connection_thread_.join();
+  this->send_thread_.join();
 }
