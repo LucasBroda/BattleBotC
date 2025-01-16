@@ -35,6 +35,7 @@ void TCPClient::Handle() {
     {
       ServerClientMessage message;
       message.ParseFromArray(buffer.data(), buffer.size());
+
       if (this->HandleMessage(message)) {
         std::lock_guard guard(this->cv_recvq_m);
         this->recvq.push(message);
@@ -61,6 +62,16 @@ bool TCPClient::HandleMessage(ServerClientMessage sc_message) {
     this->local_player_data_.is_dead = !player_data.alive();
     this->local_player_data_.armor = player_data.armor();
     this->local_player_data_.score = player_data.score();
+    return false;
+  } else if (sc_message.has_game_ended()) {
+    if (this->game_ended_handler != nullptr) {
+      this->game_ended_handler(this->local_player_data_);
+    }
+    return false;
+  } else if (sc_message.has_game_started()) {
+    if (this->game_started_handler != nullptr) {
+      this->game_started_handler();
+    }
     return false;
   }
   return true;
@@ -123,4 +134,13 @@ TCPClient::WaitForMessage(std::function<bool(ServerClientMessage)> test) {
   ServerClientMessage message = this->recvq.front();
   this->recvq.pop();
   return message;
+}
+
+void TCPClient::SetGameEndedHandler(
+    void (*game_ended_handler)(BC_PlayerData player_data)) {
+  this->game_ended_handler = game_ended_handler;
+}
+
+void TCPClient::SetGameStartedHandler(void (*game_started_handler)()) {
+  this->game_started_handler = game_started_handler;
 }

@@ -188,6 +188,65 @@ void *bc_ll_value(BC_List *bc_list);
  */
 void bc_ll_free(BC_List *bc_list);
 
+/**
+ * @brief Sets a callback handler to be invoked when the game ends.
+ *
+ * This function allows the user to define a callback that will be triggered
+ * whenever the game ends. The callback function should handle any cleanup,
+ * notifications, or actions required after the game has concluded.
+ *
+ * @param connection
+ *        A pointer to the BC_Connection object representing the active
+ *        connection. This connection is used to associate the callback
+ *        with the specific game session.
+ *
+ * @param game_ended_handler
+ *        A function pointer to the user-defined callback function that will
+ *        be executed when the game ends. The callback function takes a
+ *        BC_PlayerData object as a parameter, which provides details about
+ *        the player's status or data at the end of the game.
+ *
+ * @note
+ * - Ensure the `connection` object is valid and properly initialized before
+ *   invoking this function.
+ * - The `game_ended_handler` callback must conform to the specified signature:
+ *   `void callback_function(BC_PlayerData player_data);`.
+ * - The `game_ended_handler` callback is optional. Passing NULL will unset
+ *   any previously set handler.
+ */
+void bc_set_game_ended_handler(
+    BC_Connection *connection,
+    void (*game_ended_handler)(BC_PlayerData player_data));
+
+/**
+ * @brief Sets a callback handler to be invoked when the game starts.
+ *
+ * This function allows the user to define a callback that will be triggered
+ * whenever a game starts. The callback function should handle any setup,
+ * initialization, or notifications required when the game begins.
+ *
+ * @param connection
+ *        A pointer to the BC_Connection object representing the active
+ *        connection. This connection is used to associate the callback
+ *        with the specific game session.
+ *
+ * @param game_started_handler
+ *        A function pointer to the user-defined callback function that will
+ *        be executed when the game starts. The callback function does not
+ *        take any parameters and should conform to the following signature:
+ *        `void callback_function();`.
+ *
+ * @note
+ * - Ensure the `connection` object is valid and properly initialized before
+ *   invoking this function.
+ * - The `game_started_handler` callback is optional. Passing NULL will unset
+ *   any previously set handler.
+ * - The callback is expected to execute quickly to avoid delaying game start
+ *   operations.
+ */
+void bc_set_game_started_handler(BC_Connection *connection,
+                                 void (*game_started_handler)());
+
 #ifdef __cplusplus
 }
 #endif

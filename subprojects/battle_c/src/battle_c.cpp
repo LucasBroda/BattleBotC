@@ -167,4 +167,18 @@ BC_List *bc_ll_next(BC_List *linked_list) {
 void *bc_ll_value(BC_List *linked_list) {
   return (void *)(((LinkedList *)linked_list)->Value());
 }
+
+void bc_set_game_ended_handler(
+    BC_Connection *connection,
+    void (*game_ended_handler)(BC_PlayerData player_data)) {
+  TCPClient *client = (TCPClient *)connection;
+  client->SetGameEndedHandler(game_ended_handler);
+}
+
+void bc_set_game_started_handler(BC_Connection *connection,
+                                 void (*game_started_handler)()) {
+
+  TCPClient *client = (TCPClient *)connection;
+  client->SetGameStartedHandler(game_started_handler);
+}
 }

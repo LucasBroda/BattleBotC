@@ -30,6 +30,9 @@ class TCPClient {
 
   uint64_t seq_number = 64;
 
+  void (*game_ended_handler)(BC_PlayerData player_data) = nullptr;
+  void (*game_started_handler)() = nullptr;
+
   BC_PlayerData local_player_data_;
   bool HandleMessage(ServerClientMessage sc_message);
 
@@ -45,6 +48,11 @@ public:
   WaitForMessage(std::function<bool(ServerClientMessage)> test);
 
   BC_PlayerData GetPlayerData() { return local_player_data_; }
+
+  void
+  SetGameEndedHandler(void (*game_ended_handler)(BC_PlayerData player_data));
+
+  void SetGameStartedHandler(void (*game_started_handler)());
 };
 
 #endif

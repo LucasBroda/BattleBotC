@@ -84,6 +84,18 @@ message ShootResult {
   optional bool target_destroyed = 4;
 }
 
+enum GameEndedReason {
+  KILLED = 0;
+  GAME_STOPPED = 1;
+}
+
+message GameEnded {
+  optional GameEndedReason reason = 1;
+}
+message GameStarted {
+
+}
+
 message ServerClientMessage {
   optional int32 message_id = 1;
   oneof body {
@@ -93,5 +105,7 @@ message ServerClientMessage {
     PlayersSighted players_sighted = 5; // When players are in visual range 
     RadarResult radar_result = 6; // BVR radar ping
     ShootResult shoot_result = 7;
+    GameEnded game_ended = 8;
+    GameStarted game_started = 9;
   }
 }
