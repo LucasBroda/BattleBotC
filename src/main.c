@@ -3,6 +3,16 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+void print_data_current_player(BC_Connection *connection){
+  BC_PlayerData player = bc_get_player_data(connection);
+    printf("ID : %d\n", player.id);
+    printf("Health : %d\n", player.health);
+    printf("Armor : %d\n", player.armor);
+    printf("Score : %d\n", player.score);
+    printf("Position x: %.2f\n", player.position.x);
+    printf("Position y: %.2f\n", player.position.y);
+}
+
 BC_MapObject create_player_object(int id, BC_Vector3 position, BC_Vector3 speed, int health, int score, int armor) {
     BC_PlayerData player_data;
     player_data.id = id;
@@ -28,25 +38,13 @@ int main(int argc, char *argv[])
 
   BC_Connection *conn = bc_connect("5.135.136.236", 8080);
 
-  bc_get_world_info(conn);
+  if (!conn) {
+        printf("Erreur : Impossible de se connecter au serveur\n");
+        return 1;
+    }
+    printf("Connecté au serveur avec succès !\n");
 
-  bc_set_speed(conn, 1.2, 0.4, 0);
+    print_data_current_player(conn);
 
-  BC_PlayerData data = bc_get_player_data(conn);
-
-  // affiche les données du joueur
-  printf("id = %d, position = %d, %d, %d, speed = %d, %d, %d, health = %d, score = %d, armor = %d, is_dead = %d", data.id, data.position.x, data.position.y, data.position.z, data.speed.x, data.speed.y, data.speed.z, data.health, data.score, data.armor, data.is_dead);
-
-  BC_List *list = bc_radar_ping(conn);
-
-
-  create_player_object(1, data.position, data.speed, data.health, data.score, data.armor);
-
-  do {
-    BC_MapObject *map_object = (BC_MapObject *)bc_ll_value(list);
-    printf("map_object x = %d, y = %d", map_object->position.x,
-           map_object->position.y);
-
-  } while (((list = bc_ll_next(list)) != NULL));
   return EXIT_SUCCESS;
 }
