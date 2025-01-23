@@ -2,25 +2,18 @@
 #include "battle_c.pb.h"
 #include <array>
 #include <cstdint>
+#include <exception>
 #include <iostream>
 #include <mutex>
+#include <stdexcept>
 #include <string>
 
 void TCPClient::Handle() {
-  for (;;) {
+  while (this->is_running_) {
     uint8_t magic;
     uint32_t message_size;
     size_t len;
     boost::system::error_code error;
-    do {
-      len = socket.value().read_some(boost::asio::buffer(&magic, sizeof(magic)),
-                                     error);
-
-      if (error == boost::asio::error::eof)
-        break;
-      else if (error)
-        throw boost::system::system_error(error);
-    } while (magic != 0b10101010);
 
     len = socket.value().read_some(
         boost::asio::buffer(&message_size, sizeof(message_size)), error);
@@ -32,7 +25,7 @@ void TCPClient::Handle() {
 
     std::vector<uint8_t> buffer(message_size);
     socket.value().read_some(boost::asio::buffer(buffer), error);
-    {
+    try {
       ServerClientMessage message;
       message.ParseFromArray(buffer.data(), buffer.size());
 
@@ -40,6 +33,9 @@ void TCPClient::Handle() {
         std::lock_guard guard(this->cv_recvq_m);
         this->recvq.push(message);
       }
+    } catch (std::exception &e) {
+      std::cerr << e.what() << std::endl;
+      throw std::runtime_error("Unable to handle message");
     }
     this->cv_recvq.notify_one();
   }
@@ -85,6 +81,7 @@ void TCPClient::Connect(std::string host, uint16_t port) {
   this->socket = boost::asio::ip::tcp::socket(io_context);
 
   boost::asio::connect(this->socket.value(), endpoints);
+  this->is_running_ = true;
   this->connection_thread_ = std::thread(&TCPClient::Handle, this);
   this->send_thread_ = std::thread(&TCPClient::SendQueue, this);
 }
@@ -93,7 +90,7 @@ void TCPClient::SendQueue() {
   boost::system::error_code error;
   std::unique_lock<std::mutex> lk(this->cv_sendq_m);
 
-  while (true) {
+  while (this->is_running_) {
     while (this->sendq.empty()) {
       cv_sendq.wait(lk);
     }
@@ -102,9 +99,6 @@ void TCPClient::SendQueue() {
 
     std::string output;
     message.SerializeToString(&output);
-
-    uint8_t magic = 0b10101010;
-    socket.value().write_some(boost::asio::buffer(&magic, sizeof(uint8_t)));
 
     uint32_t packet_size = output.size();
     socket.value().write_some(
@@ -143,4 +137,10 @@ void TCPClient::SetGameEndedHandler(
 
 void TCPClient::SetGameStartedHandler(void (*game_started_handler)()) {
   this->game_started_handler = game_started_handler;
+}
+
+void TCPClient::Stop() {
+  this->is_running_ = false;
+  this->connection_thread_.join();
+  this->send_thread_.join();
 }

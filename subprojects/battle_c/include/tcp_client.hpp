@@ -36,6 +36,8 @@ class TCPClient {
   BC_PlayerData local_player_data_;
   bool HandleMessage(ServerClientMessage sc_message);
 
+  bool is_running_ = false;
+
 public:
   TCPClient() {};
 
@@ -53,6 +55,8 @@ public:
   SetGameEndedHandler(void (*game_ended_handler)(BC_PlayerData player_data));
 
   void SetGameStartedHandler(void (*game_started_handler)());
+
+  void Stop();
 };
 
 #endif
