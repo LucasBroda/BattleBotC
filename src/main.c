@@ -36,6 +36,9 @@ int main(int argc, char *argv[])
 
   BC_PlayerData data = bc_get_player_data(conn);
 
+  // affiche les données du joueur
+  printf("id = %d, position = %d, %d, %d, speed = %d, %d, %d, health = %d, score = %d, armor = %d, is_dead = %d", data.id, data.position.x, data.position.y, data.position.z, data.speed.x, data.speed.y, data.speed.z, data.health, data.score, data.armor, data.is_dead);
+
   BC_List *list = bc_radar_ping(conn);
 
 feature/CreationJoueur
