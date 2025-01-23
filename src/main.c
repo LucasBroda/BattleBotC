@@ -51,13 +51,13 @@ int main(int argc, char *argv[])
     }
     printf("Connecté au serveur avec succès letsgo !\n");
 
-    // Affiche les données du joueur courant
-    prinf("Affichage des données du joueur courant\n");
-    print_data_current_player(conn);
-
     // Information sur le monde courant
     printf("Information sur le monde courant\n");
     bc_get_world_info(conn);
+    
+    // Affiche les données du joueur courant
+    printf("Affichage des données du joueur courant\n");
+    print_data_current_player(conn);
 
     // Permet de bouger le joueur
     move_player(conn, 1, 1, 1);
