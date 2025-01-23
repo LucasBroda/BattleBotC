@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+// Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
 char* ConvertObjectTypeToString(enum BC_ObjectType type) {
     switch (type) {
         case OT_PLAYER: return "PLAYER";
