@@ -2,7 +2,7 @@
 
 #include "stdio.h"
 #include "stdlib.h"
-
+//test
 BC_MapObject create_player_object(int id, BC_Vector3 position, BC_Vector3 speed, int health, int score, int armor) {
     BC_PlayerData player_data;
     player_data.id = id;
