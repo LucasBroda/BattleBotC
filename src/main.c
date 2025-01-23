@@ -28,5 +28,11 @@ int main(int argc, char *argv[])
 
   BC_Connection *conn = bc_connect("5.135.136.236", 8080);
 
+  if (!conn) {
+        printf("Erreur : Impossible de se connecter au serveur\n");
+        return 1;
+    }
+    printf("Connecté au serveur avec succès !\n");
+
   return EXIT_SUCCESS;
 }
