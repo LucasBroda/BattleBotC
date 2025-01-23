@@ -3,34 +3,41 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+// Fonction permettant d'afficher les données du joueur courant
 void print_data_current_player(BC_Connection *connection){
   BC_PlayerData player = bc_get_player_data(connection);
     printf("ID : %d\n", player.id);
-    printf("Health : %d\n", player.health);
-    printf("Armor : %d\n", player.armor);
+    printf("Vie du joueur : %d\n", player.health);
+    printf("Armure du joueur : %d\n", player.armor);
     printf("Score : %d\n", player.score);
     printf("Position x: %.2f\n", player.position.x);
     printf("Position y: %.2f\n", player.position.y);
 }
+ 
+// Fonction permettant de bouger le joueur
+void move_player(BC_Connection *connection, double x, double y, double z){
+  bc_set_speed(connection, x, y, z);
+  printf("Le joueur a bougé à la position x: %.2f, y: %.2f, z: %.2f\n", x, y, z);
+}
 
-BC_MapObject create_player_object(int id, BC_Vector3 position, BC_Vector3 speed, int health, int score, int armor) {
-    BC_PlayerData player_data;
-    player_data.id = id;
-    player_data.position = position;
-    player_data.speed = speed;
-    player_data.health = health;
-    player_data.score = score;
-    player_data.armor = armor;
-    player_data.is_dead = false;
-    
-    BC_MapObject player_object;
-    player_object.type = OT_PLAYER;
-    player_object.id = id;
-    player_object.position = position;
-    player_object.speed = speed;
-    player_object.health = health;
-
-    return player_object;
+// Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
+void radar(BC_Connection *connection){
+  BC_List *list = bc_radar_ping(connection);
+  BC_List *current = list;
+  while (current != NULL){
+    BC_MapObject *object = bc_ll_value(current);
+    printf("ID : %d\n", object->id);
+    printf("Type : %d\n", object->type);
+    printf("Vie : %d\n", object->health);
+    printf("Position x: %.2f\n", object->position.x);
+    printf("Position y: %.2f\n", object->position.y);
+    printf("Position z: %.2f\n", object->position.z);
+    printf("Vitesse x: %.2f\n", object->speed.x);
+    printf("Vitesse y: %.2f\n", object->speed.y);
+    printf("Vitesse z: %.2f\n", object->speed.z);
+    current = bc_ll_next(current);
+  }
+  bc_ll_free(list);
 }
 
 int main(int argc, char *argv[])
@@ -42,9 +49,22 @@ int main(int argc, char *argv[])
         printf("Erreur : Impossible de se connecter au serveur\n");
         return 1;
     }
-    printf("Connecté au serveur avec succès !\n");
+    printf("Connecté au serveur avec succès letsgo !\n");
 
+    // Affiche les données du joueur courant
+    prinf("Affichage des données du joueur courant\n");
     print_data_current_player(conn);
+
+    // Information sur le monde courant
+    printf("Information sur le monde courant\n");
+    bc_get_world_info(conn);
+
+    // Permet de bouger le joueur
+    move_player(conn, 1, 1, 1);
+
+    // Radar
+    printf("Radar\n");
+    radar(conn);
 
   return EXIT_SUCCESS;
 }
