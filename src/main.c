@@ -1,5 +1,4 @@
 #include "battle_c.h"
-
 #include "stdio.h"
 #include "stdlib.h"
 
@@ -36,12 +35,12 @@ void radar(BC_Connection *connection){
   BC_List *current = list;
   while (current != NULL){
     BC_MapObject *object = bc_ll_value(current);
+    printf("----------------------Nouveau scan----------------------\n");
     printf("ID : %d\n", object->id);
     printf("Type : %s\n", ConvertObjectTypeToString(object->type));
     printf("Vie : %d\n", object->health);
     printf("Position x: %.2f\n", object->position.x);
     printf("Position y: %.2f\n", object->position.y);
-    printf("Position z: %.2f\n", object->position.z);
     current = bc_ll_next(current);
   }
   bc_ll_free(list);
@@ -70,7 +69,6 @@ int main(int argc, char *argv[])
     move_player(conn, 1, 1, 1);
 
     // Radar
-    printf("Radar\n");
     // while(true){
       radar(conn);
     // }
