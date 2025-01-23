@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+// Fonction permettant d'afficher les données du joueur courant
 void print_data_current_player(BC_Connection *connection){
   BC_PlayerData player = bc_get_player_data(connection);
     printf("ID : %d\n", player.id);
@@ -13,9 +14,30 @@ void print_data_current_player(BC_Connection *connection){
     printf("Position y: %.2f\n", player.position.y);
 }
  
+// Fonction permettant de bouger le joueur
 void move_player(BC_Connection *connection, double x, double y, double z){
   bc_set_speed(connection, x, y, z);
   printf("Le joueur a bougé à la position x: %.2f, y: %.2f, z: %.2f\n", x, y, z);
+}
+
+// Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
+void radar(BC_Connection *connection){
+  BC_List *list = bc_radar_ping(connection);
+  BC_List *current = list;
+  while (current != NULL){
+    BC_MapObject *object = bc_ll_value(current);
+    printf("ID : %d\n", object->id);
+    printf("Type : %d\n", object->type);
+    printf("Vie : %d\n", object->health);
+    printf("Position x: %.2f\n", object->position.x);
+    printf("Position y: %.2f\n", object->position.y);
+    printf("Position z: %.2f\n", object->position.z);
+    printf("Vitesse x: %.2f\n", object->speed.x);
+    printf("Vitesse y: %.2f\n", object->speed.y);
+    printf("Vitesse z: %.2f\n", object->speed.z);
+    current = bc_ll_next(current);
+  }
+  bc_ll_free(list);
 }
 
 int main(int argc, char *argv[])
@@ -29,11 +51,20 @@ int main(int argc, char *argv[])
     }
     printf("Connecté au serveur avec succès letsgo !\n");
 
+    // Affiche les données du joueur courant
+    prinf("Affichage des données du joueur courant\n");
+    print_data_current_player(conn);
+
+    // Information sur le monde courant
+    printf("Information sur le monde courant\n");
     bc_get_world_info(conn);
 
+    // Permet de bouger le joueur
     move_player(conn, 1, 1, 1);
 
-    print_data_current_player(conn);
+    // Radar
+    printf("Radar\n");
+    radar(conn);
 
   return EXIT_SUCCESS;
 }
