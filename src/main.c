@@ -6,31 +6,16 @@
 void print_data_current_player(BC_Connection *connection){
   BC_PlayerData player = bc_get_player_data(connection);
     printf("ID : %d\n", player.id);
-    printf("Health : %d\n", player.health);
-    printf("Armor : %d\n", player.armor);
+    printf("Vie du joueur : %d\n", player.health);
+    printf("Armure du joueur : %d\n", player.armor);
     printf("Score : %d\n", player.score);
     printf("Position x: %.2f\n", player.position.x);
     printf("Position y: %.2f\n", player.position.y);
 }
-
-BC_MapObject create_player_object(int id, BC_Vector3 position, BC_Vector3 speed, int health, int score, int armor) {
-    BC_PlayerData player_data;
-    player_data.id = id;
-    player_data.position = position;
-    player_data.speed = speed;
-    player_data.health = health;
-    player_data.score = score;
-    player_data.armor = armor;
-    player_data.is_dead = false;
-    
-    BC_MapObject player_object;
-    player_object.type = OT_PLAYER;
-    player_object.id = id;
-    player_object.position = position;
-    player_object.speed = speed;
-    player_object.health = health;
-
-    return player_object;
+ 
+void move_player(BC_Connection *connection, double x, double y, double z){
+  bc_set_speed(connection, x, y, z);
+  printf("Le joueur a bougé à la position x: %.2f, y: %.2f, z: %.2f\n", x, y, z);
 }
 
 int main(int argc, char *argv[])
@@ -42,7 +27,11 @@ int main(int argc, char *argv[])
         printf("Erreur : Impossible de se connecter au serveur\n");
         return 1;
     }
-    printf("Connecté au serveur avec succès !\n");
+    printf("Connecté au serveur avec succès letsgo !\n");
+
+    bc_get_world_info(conn);
+
+    move_player(conn, 1, 1, 1);
 
     print_data_current_player(conn);
 
