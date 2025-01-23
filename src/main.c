@@ -3,6 +3,16 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+void print_data_current_player(BC_Connection *connection){
+  BC_PlayerData player = bc_get_player_data(connection);
+    printf("ID : %d\n", player.id);
+    printf("Health : %d\n", player.health);
+    printf("Armor : %d\n", player.armor);
+    printf("Score : %d\n", player.score);
+    printf("Position x: %.2f\n", player.position.x);
+    printf("Position y: %.2f\n", player.position.y);
+}
+
 BC_MapObject create_player_object(int id, BC_Vector3 position, BC_Vector3 speed, int health, int score, int armor) {
     BC_PlayerData player_data;
     player_data.id = id;
@@ -33,6 +43,8 @@ int main(int argc, char *argv[])
         return 1;
     }
     printf("Connecté au serveur avec succès !\n");
+
+    print_data_current_player(conn);
 
   return EXIT_SUCCESS;
 }
