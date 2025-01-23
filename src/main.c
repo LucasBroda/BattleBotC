@@ -3,6 +3,15 @@
 #include "stdio.h"
 #include "stdlib.h"
 
+char* ConvertObjectTypeToString(enum BC_ObjectType type) {
+    switch (type) {
+        case OT_PLAYER: return "PLAYER";
+        case OT_WALL:   return "WALL";
+        case OT_BOOST:  return "BOOST";
+        default:        return "UNKNOWN";
+    }
+}
+
 // Fonction permettant d'afficher les données du joueur courant
 void print_data_current_player(BC_Connection *connection){
   BC_PlayerData player = bc_get_player_data(connection);
@@ -27,14 +36,11 @@ void radar(BC_Connection *connection){
   while (current != NULL){
     BC_MapObject *object = bc_ll_value(current);
     printf("ID : %d\n", object->id);
-    printf("Type : %d\n", object->type);
+    printf("Type : %s\n", ConvertObjectTypeToString(object->type));
     printf("Vie : %d\n", object->health);
     printf("Position x: %.2f\n", object->position.x);
     printf("Position y: %.2f\n", object->position.y);
     printf("Position z: %.2f\n", object->position.z);
-    printf("Vitesse x: %.2f\n", object->speed.x);
-    printf("Vitesse y: %.2f\n", object->speed.y);
-    printf("Vitesse z: %.2f\n", object->speed.z);
     current = bc_ll_next(current);
   }
   bc_ll_free(list);
@@ -54,7 +60,7 @@ int main(int argc, char *argv[])
     // Information sur le monde courant
     printf("Information sur le monde courant\n");
     bc_get_world_info(conn);
-    
+
     // Affiche les données du joueur courant
     printf("Affichage des données du joueur courant\n");
     print_data_current_player(conn);
@@ -64,7 +70,9 @@ int main(int argc, char *argv[])
 
     // Radar
     printf("Radar\n");
-    radar(conn);
+    // while(true){
+      radar(conn);
+    // }
 
   return EXIT_SUCCESS;
 }
