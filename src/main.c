@@ -3,7 +3,6 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-feature/CreationJoueur
 BC_MapObject create_player_object(int id, BC_Vector3 position, BC_Vector3 speed, int health, int score, int armor) {
     BC_PlayerData player_data;
     player_data.id = id;
@@ -26,7 +25,6 @@ BC_MapObject create_player_object(int id, BC_Vector3 position, BC_Vector3 speed,
 
 int main(int argc, char *argv[])
 {
- main
 
   BC_Connection *conn = bc_connect("5.135.136.236", 8080);
 
@@ -41,11 +39,10 @@ int main(int argc, char *argv[])
 
   BC_List *list = bc_radar_ping(conn);
 
-feature/CreationJoueur
+
   create_player_object(1, data.position, data.speed, data.health, data.score, data.armor);
 
   do {
-main
     BC_MapObject *map_object = (BC_MapObject *)bc_ll_value(list);
     printf("map_object x = %d, y = %d", map_object->position.x,
            map_object->position.y);
