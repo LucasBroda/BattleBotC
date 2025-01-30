@@ -30,17 +30,22 @@ void move_player(BC_Connection *connection, double x, double y, double z){
 }
 
 // Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
-void radar(BC_Connection *connection){
+void radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters, float meters_to_pixels){
+  float detection_radius_pixels = detection_radius_meters * meters_to_pixels;
+  
   BC_List *list = bc_radar_ping(connection);
   BC_List *current = list;
   while (current != NULL){
     BC_MapObject *object = bc_ll_value(current);
-    printf("----------------------Nouveau scan----------------------\n");
-    printf("ID : %d\n", object->id);
-    printf("Type : %s\n", ConvertObjectTypeToString(object->type));
-    printf("Vie : %d\n", object->health);
-    printf("Position x: %.2f\n", object->position.x);
-    printf("Position y: %.2f\n", object->position.y);
+    float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
+    if (distance <= detection_radius_pixels) {
+      printf("----------------------Nouveau scan----------------------\n");
+      printf("ID : %d\n", object->id);
+      printf("Type : %s\n", ConvertObjectTypeToString(object->type));
+      printf("Vie : %d\n", object->health);
+      printf("Position x: %.2f\n", object->position.x);
+      printf("Position y: %.2f\n", object->position.y);
+    }
     current = bc_ll_next(current);
   }
   bc_ll_free(list);
@@ -68,9 +73,13 @@ int main(int argc, char *argv[])
     // Permet de bouger le joueur
     move_player(conn, 1, 1, 1);
 
+    float player_x = 100.0f; 
+    float player_y = 200.0f;
+    float detection_radius_meters = 10.0f;
+    float meters_to_pixels = 50.0f;
     // Radar
     // while(true){
-      radar(conn);
+    radar(conn, player_x, player_y, detection_radius_meters, meters_to_pixels);
     // }
 
   return EXIT_SUCCESS;
