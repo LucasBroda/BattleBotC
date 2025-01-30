@@ -6,17 +6,6 @@
 #include <string.h>
 #include <math.h>
 
-// Définition de la structure pour stocker les informations des objets
-typedef struct {
-    char type[50];
-    float position_x;
-    float position_y;
-} ObjectInfo;
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
 
 // Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
 char* ConvertObjectTypeToString(enum BC_ObjectType type) {
@@ -27,7 +16,7 @@ char* ConvertObjectTypeToString(enum BC_ObjectType type) {
         default:        return "UNKNOWN";
     }
 }
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 // Fonction permettant d'afficher les données du joueur courant
 void print_data_current_player(BC_Connection *connection){
   BC_PlayerData player = bc_get_player_data(connection);
@@ -59,23 +48,6 @@ void move_player(BC_Connection *connection, double x, double y, double z){
   printf("Le joueur a bougé à la position x: %.2f, y: %.2f, z: %.2f\n", x, y, z);
 }
 
-void shoot(BC_Connection *connection, double angle) {
-    // Appelle la fonction bc_shoot pour effectuer le tir
-    BC_ShootResult result = bc_shoot(connection, angle);
-
-    // Affiche les résultats du tir
-    printf("Tir effectué à un angle de %.2f radians\n", angle);
-    printf("Succès : %s\n", result.success ? "Oui" : "Non");
-
-    if (result.success) {
-        printf("ID de la cible touchée : %d\n", result.target_id);
-        printf("Points de dégâts infligés : %d\n", result.damage_points);
-        printf("Cible détruite : %s\n", result.target_destroyed ? "Oui" : "Non");
-    } else {
-        printf("Aucune cible touchée.\n");
-    }
-}
-
 
 // Définition de la structure pour stocker les informations des objets
 typedef struct {
@@ -85,8 +57,9 @@ typedef struct {
 } ObjectInfo;
 
 // Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
-ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters, int *count) {
-    
+ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters, float meters_to_pixels, int *count) {
+        float detection_radius_pixels = detection_radius_meters * meters_to_pixels;
+
     BC_List *list = bc_radar_ping(connection);
     BC_List *current = list;
     int object_count = 0;
@@ -95,7 +68,7 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
     while (current != NULL) {
         BC_MapObject *object = bc_ll_value(current);
         float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
-        if (distance <= detection_radius_meters) {
+        if (distance <= detection_radius_pixels) {
             object_count++;
         }
         current = bc_ll_next(current);
@@ -112,8 +85,8 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
     int index = 0;
     while (current != NULL) {
         BC_MapObject *object = bc_ll_value(current);
-        float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
-        if (distance <= detection_radius_meters) {
+        float distance = sqrt(pow(object->position.x - player_x, object->position.y));
+        if (distance <= detection_radius_pixels) {
             printf("----------------------Nouveau scan----------------------\n");
             printf("ID : %d\n", object->id);
             printf("Type : %s\n", ConvertObjectTypeToString(object->type));
@@ -136,52 +109,27 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
 
     // Retourner le nombre d'objets trouvés
     *count = object_count;
-    printf("Nombre d'objets trouvés : %d\n", count);
 
     return object_infos;
 }
 
-// Fonction qui cherche dans la liste chainée du radar l'ennemi le plus proche et renvoie sa position 
-int find_closest_enemy(ObjectInfo *objects, int count, float player_x, float player_y, double *enemy_x, double *enemy_y) {
-    if (count == 0) {
-        printf("Aucun ennemi détecté.\n");
-        return 0; // Aucun ennemi trouvé
-    }
+int main(int argc, char *argv[])
+{
 
-    double min_distance = INFINITY;
-    int found = 0;
+  BC_Connection *conn = bc_connect("5.135.136.236", 8080);
 
-    for (int i = 0; i < count; i++) {
-        if (strcmp(objects[i].type, "PLAYER") == 0) { // Vérifie si l'objet est un joueur (ennemi)
-            double distance = sqrt(pow(objects[i].position_x - player_x, 2) + pow(objects[i].position_y - player_y, 2));
-            if (distance < min_distance) {
-                min_distance = distance;
-                *enemy_x = objects[i].position_x;
-                *enemy_y = objects[i].position_y;
-                found = 1;
-            }
-        }
-    }
-
-    if (found) {
-        printf("Ennemi le plus proche trouvé à x: %.2f, y: %.2f (Distance: %.2f)\n", *enemy_x, *enemy_y, min_distance);
-    } else {
-        printf("Aucun ennemi détecté dans le rayon.\n");
-    }
-
-    return found;
-}
-
-int main(int argc, char *argv[]) {
-    BC_Connection *conn = bc_connect("5.135.136.236", 8080);
-
-    if (!conn) {
+  if (!conn) {
         printf("Erreur : Impossible de se connecter au serveur\n");
         return 1;
     }
-    printf("Connecté au serveur avec succès !\n");
+    printf("Connecté au serveur avec succès letsgo !\n");
 
-    // Afficher les données du joueur
+    // Information sur le monde courant
+    printf("Information sur le monde courant\n");
+    bc_get_world_info(conn);
+
+    // Affiche les données du joueur courant
+    printf("Affichage des données du joueur courant\n");
     print_data_current_player(conn);
 
     // Permet de bouger le joueur
@@ -189,37 +137,15 @@ int main(int argc, char *argv[]) {
 
     float player_x = bc_get_player_data(conn).position.x; 
     float player_y = bc_get_player_data(conn).position.y;
-    // Position du joueur
-    BC_PlayerData player = bc_get_player_data(conn);
-    float player_x = player.position.x;
-    float player_y = player.position.y;
+        float meters_to_pixels = 50.0f;
 
-    // Radar settings
-    float detection_radius_meters = 10.0f;
+    float detection_radius_meters = 5.0f;
     // Radar
     // while(true){
-    radar(conn, player_x, player_y, detection_radius_meters, 0);
+    radar(conn, player_x, player_y, detection_radius_meters, meters_to_pixels, 0);
     // }
-    float meters_to_pixels = 50.0f;
-    int object_count = 0;
 
-    // Scanner les objets autour
-    ObjectInfo *objects = radar(conn, player_x, player_y, detection_radius_meters, meters_to_pixels, &object_count);
 
-    if (objects != NULL) {
-        double enemy_x, enemy_y;
 
-        // Trouver l'ennemi le plus proche
-        if (find_closest_enemy(objects, object_count, player_x, player_y, &enemy_x, &enemy_y)) {
-            // Calculer l'angle de tir
-            double angle = calculate_shoot_angle(conn, enemy_x, enemy_y);
-
-            // Tirer sur l'ennemi
-            shoot(conn, angle);
-        }
-
-        free(objects); // Libérer la mémoire
-    }
-
-    return EXIT_SUCCESS;
+  return EXIT_SUCCESS;
 }
