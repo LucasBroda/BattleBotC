@@ -34,12 +34,6 @@ void print_data_current_player(BC_Connection *connection){
     printf("Position y: %.2f\n", player.position.y);
     fflush(stdout);
 }
- 
-// Fonction permettant de bouger le joueur
-void move_player(BC_Connection *connection, double x, double y, double z){
-  bc_set_speed(connection, x, y, z);
-  printf("Le joueur a bougé à la position x: %.2f, y: %.2f, z: %.2f\n", x, y, z);
-}
 
 // Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
 ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters,int *count) {
@@ -99,6 +93,42 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
     return object_infos;
 }
 
+// Fonction permettant de bouger le joueur
+void move_player(BC_Connection *connection, double x, double y, double z, float detection_perimeter, float player_x, float player_y){
+    int object_count = 0;
+
+    // Appel de la fonction radar pour vérifier les obstacles
+    ObjectInfo* objects = radar(connection, player_x, player_y, detection_perimeter, &object_count);
+
+    int obstacle_detected = 0;
+    for (int i = 0; i < object_count; i++) {
+        if (strcmp(objects[i].type, "WALL") == 0) {
+            float distance_x = objects[i].position_x - player_x;
+            float distance_y = objects[i].position_y - player_y;
+            if ((distance_x * x > 0) && (distance_y * y > 0)) {
+                obstacle_detected = 1;
+                break;
+            }
+        }
+    }
+
+    // Libérer la mémoire allouée
+    free(objects);
+
+    // Si un obstacle est détecté, inverser la direction
+    if (obstacle_detected) {
+        x = -x;
+        y = -y;
+        z = -z;
+        printf("Obstacle détecté, changement de direction\n");
+        fflush(stdout);
+    }
+
+    bc_set_speed(connection, x, y, z);
+    printf("Le joueur a bougé à la position x: %.2f, y: %.2f, z: %.2f\n", x, y, z);
+    fflush(stdout);
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -120,20 +150,19 @@ int main(int argc, char *argv[])
     fflush(stdout);
     print_data_current_player(conn);
 
-    // Permet de bouger le joueur
-    move_player(conn, 1, 1, 1);
-
     float player_x = bc_get_player_data(conn).position.x; 
     float player_y = bc_get_player_data(conn).position.y;
     float detection_radius_meters = 10.0f;
 
     // Radar
-    // while(true){
     int player_count = 0;
     radar(conn, player_x, player_y, detection_radius_meters, &player_count);
-    // }
     printf("Fin du radar\n");
     fflush(stdout);
+    // Permet de bouger le joueur
+    while(1){
+      move_player(conn, 2, 2, 2, player_x, player_y, detection_radius_meters);
+    }
 
   return EXIT_SUCCESS;
 }
