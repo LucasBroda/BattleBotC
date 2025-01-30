@@ -8,7 +8,7 @@
 
 // Définition de la structure pour stocker les informations des objets
 typedef struct {
-    char type[50];
+    char* type;
     float position_x;
     float position_y;
 } ObjectInfo;
@@ -32,6 +32,7 @@ void print_data_current_player(BC_Connection *connection){
     printf("Score : %d\n", player.score);
     printf("Position x: %.2f\n", player.position.x);
     printf("Position y: %.2f\n", player.position.y);
+    fflush(stdout);
 }
  
 // Fonction permettant de bouger le joueur
@@ -41,7 +42,7 @@ void move_player(BC_Connection *connection, double x, double y, double z){
 }
 
 // Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
-ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters, int *count) {
+ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters,int *count) {
     
     BC_List *list = bc_radar_ping(connection);
     BC_List *current = list;
@@ -78,21 +79,22 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
             printf("Position y: %.2f\n", object->position.y);
 
             // Stocker les informations dans la structure
-            strncpy(object_infos[index].type, ConvertObjectTypeToString(object->type), sizeof(object_infos[index].type) - 1);
-            object_infos[index].type[sizeof(object_infos[index].type) - 1] = '\0';
+            object_infos[index].type = ConvertObjectTypeToString(object->type);
             object_infos[index].position_x = object->position.x;
             object_infos[index].position_y = object->position.y;
 
             index++;
+            fflush(stdout);
         }
         current = bc_ll_next(current);
     }
 
-    bc_ll_free(list);
-
     // Retourner le nombre d'objets trouvés
     *count = object_count;
-    printf("Nombre d'objets trouvés : %d\n", count);
+    printf("Nombre d'objets trouvés : %d\n", *count);
+    fflush(stdout);
+
+    bc_ll_free(list);
 
     return object_infos;
 }
@@ -107,13 +109,15 @@ int main(int argc, char *argv[])
         return 1;
     }
     printf("Connecté au serveur avec succès letsgo !\n");
-
+    fflush(stdout);
     // Information sur le monde courant
     printf("Information sur le monde courant\n");
+    fflush(stdout);
     bc_get_world_info(conn);
 
     // Affiche les données du joueur courant
     printf("Affichage des données du joueur courant\n");
+    fflush(stdout);
     print_data_current_player(conn);
 
     // Permet de bouger le joueur
@@ -122,10 +126,14 @@ int main(int argc, char *argv[])
     float player_x = bc_get_player_data(conn).position.x; 
     float player_y = bc_get_player_data(conn).position.y;
     float detection_radius_meters = 10.0f;
+
     // Radar
     // while(true){
-    radar(conn, player_x, player_y, detection_radius_meters, 0);
+    int player_count = 0;
+    radar(conn, player_x, player_y, detection_radius_meters, &player_count);
     // }
+    printf("Fin du radar\n");
+    fflush(stdout);
 
   return EXIT_SUCCESS;
 }
