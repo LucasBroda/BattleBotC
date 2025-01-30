@@ -1,8 +1,17 @@
 #include "battle_c.h"
-
 #include "stdio.h"
 #include "stdlib.h"
-#include <unistd.h>
+
+
+// Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
+char* ConvertObjectTypeToString(enum BC_ObjectType type) {
+    switch (type) {
+        case OT_PLAYER: return "PLAYER";
+        case OT_WALL:   return "WALL";
+        case OT_BOOST:  return "BOOST";
+        default:        return "UNKNOWN";
+    }
+}
 
 // Fonction permettant d'afficher les données du joueur courant
 void print_data_current_player(BC_Connection *connection){
@@ -35,42 +44,73 @@ void move_player(BC_Connection *connection, double x, double y, double z){
   printf("Le joueur a bougé à la position x: %.2f, y: %.2f, z: %.2f\n", x, y, z);
 }
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+// Définition de la structure pour stocker les informations des objets
+typedef struct {
+    char type[50];
+    float position_x;
+    float position_y;
+} ObjectInfo;
+
 // Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
-void radar(BC_Connection *connection){
-  BC_List *list = bc_radar_ping(connection);
-  BC_List *current = list;
-  while (current != NULL){
-    BC_MapObject *object = bc_ll_value(current);
-    printf("ID : %d\n", object->id);
-    printf("Type : %d\n", object->type);
-    printf("Vie : %d\n", object->health);
-    printf("Position x: %.2f\n", object->position.x);
-    printf("Position y: %.2f\n", object->position.y);
-    printf("Position z: %.2f\n", object->position.z);
-    printf("Vitesse x: %.2f\n", object->speed.x);
-    printf("Vitesse y: %.2f\n", object->speed.y);
-    printf("Vitesse z: %.2f\n", object->speed.z);
-    current = bc_ll_next(current);
-  }
-  bc_ll_free(list);
-}
+ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters, float meters_to_pixels, int *count) {
+    float detection_radius_pixels = detection_radius_meters * meters_to_pixels;
+    
+    BC_List *list = bc_radar_ping(connection);
+    BC_List *current = list;
+    int object_count = 0;
 
-// Fonction permettant au joueur de tirer
-void shoot(BC_Connection *connection, double angle) {
-    // Appelle la fonction bc_shoot pour effectuer le tir
-    BC_ShootResult result = bc_shoot(connection, angle);
-
-    // Affiche les résultats du tir
-    printf("Tir effectué à un angle de %.2f radians\n", angle);
-    printf("Succès : %s\n", result.success ? "Oui" : "Non");
-
-    if (result.success) {
-        printf("ID de la cible touchée : %d\n", result.target_id);
-        printf("Points de dégâts infligés : %d\n", result.damage_points);
-        printf("Cible détruite : %s\n", result.target_destroyed ? "Oui" : "Non");
-    } else {
-        printf("Aucune cible touchée.\n");
+    // Compter le nombre d'objets dans le rayon de détection
+    while (current != NULL) {
+        BC_MapObject *object = bc_ll_value(current);
+        float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
+        if (distance <= detection_radius_pixels) {
+            object_count++;
+        }
+        current = bc_ll_next(current);
     }
+
+    // Allouer de la mémoire pour stocker les informations des objets
+    ObjectInfo *object_infos = (ObjectInfo*)malloc(object_count * sizeof(ObjectInfo));
+    if (object_infos == NULL) {
+        fprintf(stderr, "Erreur d'allocation de mémoire\n");
+        exit(EXIT_FAILURE);
+    }
+
+    current = list;
+    int index = 0;
+    while (current != NULL) {
+        BC_MapObject *object = bc_ll_value(current);
+        float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
+        if (distance <= detection_radius_pixels) {
+            printf("----------------------Nouveau scan----------------------\n");
+            printf("ID : %d\n", object->id);
+            printf("Type : %s\n", ConvertObjectTypeToString(object->type));
+            printf("Vie : %d\n", object->health);
+            printf("Position x: %.2f\n", object->position.x);
+            printf("Position y: %.2f\n", object->position.y);
+
+            // Stocker les informations dans la structure
+            strncpy(object_infos[index].type, ConvertObjectTypeToString(object->type), sizeof(object_infos[index].type) - 1);
+            object_infos[index].type[sizeof(object_infos[index].type) - 1] = '\0';
+            object_infos[index].position_x = object->position.x;
+            object_infos[index].position_y = object->position.y;
+
+            index++;
+        }
+        current = bc_ll_next(current);
+    }
+
+    bc_ll_free(list);
+
+    // Retourner le nombre d'objets trouvés
+    *count = object_count;
+
+    return object_infos;
 }
 
 int main(int argc, char *argv[])
@@ -85,9 +125,9 @@ int main(int argc, char *argv[])
     printf("Connecté au serveur avec succès letsgo !\n");
 
     // Information sur le monde courant
-    // printf("Information sur le monde courant\n");
-    // bc_get_world_info(conn);
-    
+    printf("Information sur le monde courant\n");
+    bc_get_world_info(conn);
+
     // Affiche les données du joueur courant
     printf("Affichage des données du joueur courant\n");
     print_data_current_player(conn);
@@ -95,22 +135,14 @@ int main(int argc, char *argv[])
     // Permet de bouger le joueur
     move_player(conn, 1, 1, 1);
 
-    // Tir
-    // Boucle qui tire toutes les 10 secondes
-    double angle = 1.66; // Angle fixe de tir (90 degrés)
-    printf("Lancement de la boucle de tir automatique toutes les 10 secondes...\n");
-    
-    for (int i = 0; i < 5; i++) { // Boucle de 5 tirs, modifie ou enlève la condition pour une boucle infinie
-        printf("\n[Tour %d] Préparation du tir...\n", i + 1);
-        shoot(conn, angle); // Effectue le tir
-        sleep(10); // Attente de 10 secondes
-    }
-
-    printf("Fin de la boucle de tir automatique.\n");
-
+    float player_x = 100.0f; 
+    float player_y = 200.0f;
+    float detection_radius_meters = 10.0f;
+    float meters_to_pixels = 50.0f;
     // Radar
-    printf("Radar\n");
-    radar(conn);
+    // while(true){
+    radar(conn, player_x, player_y, detection_radius_meters, meters_to_pixels, 0);
+    // }
 
   return EXIT_SUCCESS;
 }
