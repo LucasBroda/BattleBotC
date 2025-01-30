@@ -1,7 +1,17 @@
 #include "battle_c.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 
+// Définition de la structure pour stocker les informations des objets
+typedef struct {
+    char type[50];
+    float position_x;
+    float position_y;
+} ObjectInfo;
 
 // Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
 char* ConvertObjectTypeToString(enum BC_ObjectType type) {
@@ -30,21 +40,8 @@ void move_player(BC_Connection *connection, double x, double y, double z){
   printf("Le joueur a bougé à la position x: %.2f, y: %.2f, z: %.2f\n", x, y, z);
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-
-// Définition de la structure pour stocker les informations des objets
-typedef struct {
-    char type[50];
-    float position_x;
-    float position_y;
-} ObjectInfo;
-
 // Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
-ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters, float meters_to_pixels, int *count) {
-    float detection_radius_pixels = detection_radius_meters * meters_to_pixels;
+ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters, int *count) {
     
     BC_List *list = bc_radar_ping(connection);
     BC_List *current = list;
@@ -54,7 +51,7 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
     while (current != NULL) {
         BC_MapObject *object = bc_ll_value(current);
         float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
-        if (distance <= detection_radius_pixels) {
+        if (distance <= detection_radius_meters) {
             object_count++;
         }
         current = bc_ll_next(current);
@@ -72,7 +69,7 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
     while (current != NULL) {
         BC_MapObject *object = bc_ll_value(current);
         float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
-        if (distance <= detection_radius_pixels) {
+        if (distance <= detection_radius_meters) {
             printf("----------------------Nouveau scan----------------------\n");
             printf("ID : %d\n", object->id);
             printf("Type : %s\n", ConvertObjectTypeToString(object->type));
@@ -95,6 +92,7 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
 
     // Retourner le nombre d'objets trouvés
     *count = object_count;
+    printf("Nombre d'objets trouvés : %d\n", count);
 
     return object_infos;
 }
@@ -121,13 +119,12 @@ int main(int argc, char *argv[])
     // Permet de bouger le joueur
     move_player(conn, 1, 1, 1);
 
-    float player_x = 100.0f; 
-    float player_y = 200.0f;
+    float player_x = bc_get_player_data(conn).position.x; 
+    float player_y = bc_get_player_data(conn).position.y;
     float detection_radius_meters = 10.0f;
-    float meters_to_pixels = 50.0f;
     // Radar
     // while(true){
-    radar(conn, player_x, player_y, detection_radius_meters, meters_to_pixels, 0);
+    radar(conn, player_x, player_y, detection_radius_meters, 0);
     // }
 
   return EXIT_SUCCESS;
