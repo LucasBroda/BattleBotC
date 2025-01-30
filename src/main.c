@@ -2,6 +2,7 @@
 
 #include "stdio.h"
 #include "stdlib.h"
+#include <unistd.h>
 
 // Fonction permettant d'afficher les données du joueur courant
 void print_data_current_player(BC_Connection *connection){
@@ -13,6 +14,20 @@ void print_data_current_player(BC_Connection *connection){
     printf("Position x: %.2f\n", player.position.x);
     printf("Position y: %.2f\n", player.position.y);
 }
+
+double calculate_shoot_angle(BC_Connection *connection, double enemy_x, double enemy_y) {
+    // Récupère la position actuelle du joueur
+    BC_PlayerData player = bc_get_player_data(connection);
+    double player_x = player.position.x;
+    double player_y = player.position.y;
+
+    // Calcule l'angle en utilisant atan2 (donne l'angle en radians)
+    double angle = atan2(enemy_y - player_y, enemy_x - player_x);
+
+    printf("Angle calculé pour tirer sur l'ennemi : %.2f radians\n", angle);
+    return angle;
+}
+
  
 // Fonction permettant de bouger le joueur
 void move_player(BC_Connection *connection, double x, double y, double z){
@@ -40,6 +55,24 @@ void radar(BC_Connection *connection){
   bc_ll_free(list);
 }
 
+// Fonction permettant au joueur de tirer
+void shoot(BC_Connection *connection, double angle) {
+    // Appelle la fonction bc_shoot pour effectuer le tir
+    BC_ShootResult result = bc_shoot(connection, angle);
+
+    // Affiche les résultats du tir
+    printf("Tir effectué à un angle de %.2f radians\n", angle);
+    printf("Succès : %s\n", result.success ? "Oui" : "Non");
+
+    if (result.success) {
+        printf("ID de la cible touchée : %d\n", result.target_id);
+        printf("Points de dégâts infligés : %d\n", result.damage_points);
+        printf("Cible détruite : %s\n", result.target_destroyed ? "Oui" : "Non");
+    } else {
+        printf("Aucune cible touchée.\n");
+    }
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -52,8 +85,8 @@ int main(int argc, char *argv[])
     printf("Connecté au serveur avec succès letsgo !\n");
 
     // Information sur le monde courant
-    printf("Information sur le monde courant\n");
-    bc_get_world_info(conn);
+    // printf("Information sur le monde courant\n");
+    // bc_get_world_info(conn);
     
     // Affiche les données du joueur courant
     printf("Affichage des données du joueur courant\n");
@@ -61,6 +94,19 @@ int main(int argc, char *argv[])
 
     // Permet de bouger le joueur
     move_player(conn, 1, 1, 1);
+
+    // Tir
+    // Boucle qui tire toutes les 10 secondes
+    double angle = 1.66; // Angle fixe de tir (90 degrés)
+    printf("Lancement de la boucle de tir automatique toutes les 10 secondes...\n");
+    
+    for (int i = 0; i < 5; i++) { // Boucle de 5 tirs, modifie ou enlève la condition pour une boucle infinie
+        printf("\n[Tour %d] Préparation du tir...\n", i + 1);
+        shoot(conn, angle); // Effectue le tir
+        sleep(10); // Attente de 10 secondes
+    }
+
+    printf("Fin de la boucle de tir automatique.\n");
 
     // Radar
     printf("Radar\n");
