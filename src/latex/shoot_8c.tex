@@ -1,0 +1,101 @@
+\doxysection{shoot.\+c File Reference}
+\hypertarget{shoot_8c}{}\label{shoot_8c}\index{shoot.c@{shoot.c}}
+
+
+Gestion des tirs dans le jeu Battle-\/C.  
+
+
+{\ttfamily \#include "{}battle\+\_\+c.\+h"{}}\newline
+{\ttfamily \#include "{}radar.\+h"{}}\newline
+{\ttfamily \#include "{}move.\+h"{}}\newline
+{\ttfamily \#include "{}print.\+h"{}}\newline
+{\ttfamily \#include "{}shoot.\+h"{}}\newline
+{\ttfamily \#include "{}stdio.\+h"{}}\newline
+{\ttfamily \#include "{}stdlib.\+h"{}}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{shoot_8c_ab613e4b595c4ca2cff5ca50726d1ccd2}{shoot}} (BC\+\_\+\+Connection \texorpdfstring{$\ast$}{*}connection, double angle)
+\begin{DoxyCompactList}\small\item\em Permet au joueur de tirer dans une direction spécifique. \end{DoxyCompactList}\item 
+double \mbox{\hyperlink{shoot_8c_a92fe18f643c8ba33d054e07374bc003f}{calculate\+\_\+shoot\+\_\+angle}} (BC\+\_\+\+Connection \texorpdfstring{$\ast$}{*}connection, double enemy\+\_\+x, double enemy\+\_\+y)
+\begin{DoxyCompactList}\small\item\em Calcule l\textquotesingle{}angle de tir pour toucher un ennemi donné. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{shoot_8c_a4c1916bef3845b179988a5f2127e6d30}{detect\+\_\+and\+\_\+shoot\+\_\+nearest\+\_\+enemy}} (BC\+\_\+\+Connection \texorpdfstring{$\ast$}{*}connection, float player\+\_\+x, float player\+\_\+y, float detection\+\_\+radius)
+\begin{DoxyCompactList}\small\item\em Détecte l\textquotesingle{}ennemi le plus proche et effectue un tir sur lui. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Gestion des tirs dans le jeu Battle-\/C. 
+
+Ce fichier contient les fonctions permettant au joueur de tirer sur les ennemis, de calculer l\textquotesingle{}angle de tir et de détecter l\textquotesingle{}ennemi le plus proche avant de tirer. 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{shoot_8c_a92fe18f643c8ba33d054e07374bc003f}\index{shoot.c@{shoot.c}!calculate\_shoot\_angle@{calculate\_shoot\_angle}}
+\index{calculate\_shoot\_angle@{calculate\_shoot\_angle}!shoot.c@{shoot.c}}
+\doxysubsubsection{\texorpdfstring{calculate\_shoot\_angle()}{calculate\_shoot\_angle()}}
+{\footnotesize\ttfamily \label{shoot_8c_a92fe18f643c8ba33d054e07374bc003f} 
+double calculate\+\_\+shoot\+\_\+angle (\begin{DoxyParamCaption}\item[{BC\+\_\+\+Connection \texorpdfstring{$\ast$}{*}}]{connection}{, }\item[{double}]{enemy\+\_\+x}{, }\item[{double}]{enemy\+\_\+y}{}\end{DoxyParamCaption})}
+
+
+
+Calcule l\textquotesingle{}angle de tir pour toucher un ennemi donné. 
+
+Cette fonction utilise les positions du joueur et de l\textquotesingle{}ennemi pour déterminer l\textquotesingle{}angle optimal du tir en utilisant la fonction {\ttfamily atan2()}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em connection} & Pointeur vers la connexion au serveur de jeu. \\
+\hline
+{\em enemy\+\_\+x} & Position X de l\textquotesingle{}ennemi. \\
+\hline
+{\em enemy\+\_\+y} & Position Y de l\textquotesingle{}ennemi. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+L\textquotesingle{}angle de tir en radians. 
+\end{DoxyReturn}
+\Hypertarget{shoot_8c_a4c1916bef3845b179988a5f2127e6d30}\index{shoot.c@{shoot.c}!detect\_and\_shoot\_nearest\_enemy@{detect\_and\_shoot\_nearest\_enemy}}
+\index{detect\_and\_shoot\_nearest\_enemy@{detect\_and\_shoot\_nearest\_enemy}!shoot.c@{shoot.c}}
+\doxysubsubsection{\texorpdfstring{detect\_and\_shoot\_nearest\_enemy()}{detect\_and\_shoot\_nearest\_enemy()}}
+{\footnotesize\ttfamily \label{shoot_8c_a4c1916bef3845b179988a5f2127e6d30} 
+void detect\+\_\+and\+\_\+shoot\+\_\+nearest\+\_\+enemy (\begin{DoxyParamCaption}\item[{BC\+\_\+\+Connection \texorpdfstring{$\ast$}{*}}]{connection}{, }\item[{float}]{player\+\_\+x}{, }\item[{float}]{player\+\_\+y}{, }\item[{float}]{detection\+\_\+radius}{}\end{DoxyParamCaption})}
+
+
+
+Détecte l\textquotesingle{}ennemi le plus proche et effectue un tir sur lui. 
+
+Cette fonction utilise le radar pour scanner les ennemis proches du joueur. Elle identifie l\textquotesingle{}ennemi le plus proche, calcule l\textquotesingle{}angle de tir et déclenche le tir.
+
+
+\begin{DoxyParams}{Parameters}
+{\em connection} & Pointeur vers la connexion au serveur de jeu. \\
+\hline
+{\em player\+\_\+x} & Position X du joueur. \\
+\hline
+{\em player\+\_\+y} & Position Y du joueur. \\
+\hline
+{\em detection\+\_\+radius} & Rayon de détection pour trouver les ennemis. \\
+\hline
+\end{DoxyParams}
+Tableau contenant les objets détectés par le radar\Hypertarget{shoot_8c_ab613e4b595c4ca2cff5ca50726d1ccd2}\index{shoot.c@{shoot.c}!shoot@{shoot}}
+\index{shoot@{shoot}!shoot.c@{shoot.c}}
+\doxysubsubsection{\texorpdfstring{shoot()}{shoot()}}
+{\footnotesize\ttfamily \label{shoot_8c_ab613e4b595c4ca2cff5ca50726d1ccd2} 
+void shoot (\begin{DoxyParamCaption}\item[{BC\+\_\+\+Connection \texorpdfstring{$\ast$}{*}}]{connection}{, }\item[{double}]{angle}{}\end{DoxyParamCaption})}
+
+
+
+Permet au joueur de tirer dans une direction spécifique. 
+
+\texorpdfstring{$<$}{<} Connexion au serveur et gestion du jeu \texorpdfstring{$<$}{<} Détection des objets environnants \texorpdfstring{$<$}{<} Déplacement du joueur \texorpdfstring{$<$}{<} Affichage des informations du joueur \texorpdfstring{$<$}{<} Gestion des tirs 
+
+Cette fonction effectue un tir à un angle donné et affiche le résultat, y compris si le tir a réussi, les dégâts infligés et si la cible a été détruite.
+
+
+\begin{DoxyParams}{Parameters}
+{\em connection} & Pointeur vers la connexion au serveur de jeu. \\
+\hline
+{\em angle} & Angle du tir en radians. \\
+\hline
+\end{DoxyParams}
