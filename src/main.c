@@ -7,8 +7,6 @@
 #include <string.h>
 #include <math.h>
 
-// Définition de la structure pour stocker les informations des objets
-
 // Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
 char* ConvertObjectTypeToString(enum BC_ObjectType type) {
     switch (type) {
