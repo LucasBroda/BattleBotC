@@ -145,6 +145,8 @@ void detect_and_shoot_nearest_enemy(BC_Connection *connection, float player_x, f
     free(objects);
 }
 
+
+
 int main(int argc, char *argv[]) {
     BC_Connection *conn = bc_connect("5.135.136.236", 8080);
     if (!conn) {
