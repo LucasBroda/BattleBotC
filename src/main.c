@@ -18,6 +18,8 @@
 #include <string.h>
 #include <math.h>
 
+
+
 /**
  * @brief Fonction principale du programme.
  *
@@ -47,17 +49,21 @@ int main(int argc, char *argv[]) {
     float player_x = bc_get_player_data(conn).position.x;
     float player_y = bc_get_player_data(conn).position.y;
 
-    /** @brief Rayon de détection du radar en mètres */
-    float detection_radius_meters = 10.0f;
-
-    /** @brief Nombre de joueurs détectés */
+    float detection_radius_meters = 50.0f;
+    
+    // Radar
+    while(true){
     int player_count = 0;
+    print_data_current_player(conn);
+    detect_and_shoot_nearest_enemy(conn, player_x, player_y, detection_radius_meters);
+    // Déplacement du joueur
+    move_player(conn, 2.5, 2.5, 0, detection_radius_meters, player_x, player_y);
+    player_x = bc_get_player_data(conn).position.x;
+    player_y = bc_get_player_data(conn).position.y;
 
-    // Activation du radar
-    radar(conn, player_x, player_y, detection_radius_meters, &player_count);
-
-    printf("Fin du radar\n");
     fflush(stdout);
+    usleep(3000000); // Pause de 3 secondes
+  }
 
     return EXIT_SUCCESS;
 }
