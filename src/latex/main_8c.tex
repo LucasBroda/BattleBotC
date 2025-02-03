@@ -1,0 +1,62 @@
+\doxysection{main.\+c File Reference}
+\hypertarget{main_8c}{}\label{main_8c}\index{main.c@{main.c}}
+
+
+Programme principal pour la connexion et l\textquotesingle{}analyse radar dans le jeu Battle-\/C.  
+
+
+{\ttfamily \#include "{}battle\+\_\+c.\+h"{}}\newline
+{\ttfamily \#include "{}radar.\+h"{}}\newline
+{\ttfamily \#include "{}move.\+h"{}}\newline
+{\ttfamily \#include "{}print.\+h"{}}\newline
+{\ttfamily \#include "{}shoot.\+h"{}}\newline
+{\ttfamily \#include "{}stdio.\+h"{}}\newline
+{\ttfamily \#include "{}stdlib.\+h"{}}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{main_8c_a0ddf1224851353fc92bfbff6f499fa97}{main}} (int argc, char \texorpdfstring{$\ast$}{*}argv\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Fonction principale du programme. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Programme principal pour la connexion et l\textquotesingle{}analyse radar dans le jeu Battle-\/C. 
+
+Ce fichier contient la fonction principale qui établit une connexion avec le serveur, récupère les informations du monde et active un radar pour détecter les joueurs à proximité. 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{main_8c_a0ddf1224851353fc92bfbff6f499fa97}\index{main.c@{main.c}!main@{main}}
+\index{main@{main}!main.c@{main.c}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{main_8c_a0ddf1224851353fc92bfbff6f499fa97} 
+int main (\begin{DoxyParamCaption}\item[{int}]{argc}{, }\item[{char \texorpdfstring{$\ast$}{*}}]{argv}{\mbox{[}$\,$\mbox{]}}\end{DoxyParamCaption})}
+
+
+
+Fonction principale du programme. 
+
+\texorpdfstring{$<$}{<} Interface de connexion au serveur \texorpdfstring{$<$}{<} Gestion du radar \texorpdfstring{$<$}{<} Gestion des déplacements \texorpdfstring{$<$}{<} Fonctions d\textquotesingle{}affichage \texorpdfstring{$<$}{<} Gestion des tirs 
+
+Cette fonction se connecte au serveur de jeu, récupère les informations du joueur et active le radar pour détecter les autres joueurs dans un rayon donné.
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Nombre d\textquotesingle{}arguments en ligne de commande. \\
+\hline
+{\em argv} & Tableau des arguments en ligne de commande. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+EXIT\+\_\+\+SUCCESS (0) en cas de succès, 1 en cas d\textquotesingle{}échec de connexion. 
+\end{DoxyReturn}
+Pointeur vers la connexion au serveur
+
+Récupération des informations du monde et du joueur
+
+Coordonnées du joueur
+
+Rayon de détection du radar en mètres
+
+Nombre de joueurs détectés

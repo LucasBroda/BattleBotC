@@ -1,10 +1,25 @@
-#include "radar.h"
+/**
+ * @file radar.c
+ * @brief Implémentation du radar pour détecter les objets à proximité du joueur.
+ *
+ * Ce fichier contient les fonctions permettant de scanner l'environnement du joueur,
+ * d'identifier les objets proches et d'afficher leurs informations.
+ *
+ */
+
+#include "radar.h"   /**< Gestion du radar et détection d'objets */
 #include "stdio.h"
 #include "stdlib.h"
 #include <math.h>
 
-
-// Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
+/**
+ * @brief Convertit un type d'objet (enum) en une chaîne de caractères.
+ *
+ * Cette fonction permet d'afficher un type d'objet sous forme lisible (ex: "PLAYER", "WALL").
+ *
+ * @param type Type de l'objet à convertir.
+ * @return Une chaîne de caractères correspondant au type d'objet.
+ */
 char* ConvertObjectTypeToString(enum BC_ObjectType type) {
     switch (type) {
         case OT_PLAYER: return "PLAYER";
@@ -14,9 +29,23 @@ char* ConvertObjectTypeToString(enum BC_ObjectType type) {
     }
 }
 
-// Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
-ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters,int *count) {
-    
+/**
+ * @brief Détecte les objets proches du joueur en utilisant un radar.
+ *
+ * Cette fonction effectue un scan de l'environnement du joueur, récupère les objets
+ * à proximité dans un rayon donné et affiche leurs informations. Elle retourne également
+ * un tableau d'objets détectés.
+ *
+ * @param connection Pointeur vers la connexion au serveur de jeu.
+ * @param player_x Position actuelle du joueur sur l'axe X.
+ * @param player_y Position actuelle du joueur sur l'axe Y.
+ * @param detection_radius_meters Rayon de détection en mètres.
+ * @param count Pointeur pour stocker le nombre d'objets détectés.
+ * @return Un tableau d'objets détectés (ObjectInfo*), à libérer après usage.
+ */
+ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters, int *count) {
+
+    /** @brief Liste des objets détectés par le radar */
     BC_List *list = bc_radar_ping(connection);
     BC_List *current = list;
     int object_count = 0;
@@ -44,7 +73,7 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
         BC_MapObject *object = bc_ll_value(current);
         float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
         if (distance <= detection_radius_meters) {
-            printf("----------------------Nouveau scan----------------------\n");
+            printf("---------------------- Nouveau scan ----------------------\n");
             printf("ID : %d\n", object->id);
             printf("Type : %s\n", ConvertObjectTypeToString(object->type));
             printf("Vie : %d\n", object->health);
@@ -72,4 +101,3 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
 
     return object_infos;
 }
-
