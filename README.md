@@ -14,3 +14,8 @@ docker build -t battle_bot -f Dockerfile .
 ``` 
 docker run battle_bot
 ```
+
+### Documentation
+``` 
+start src/html/files.html
+```
