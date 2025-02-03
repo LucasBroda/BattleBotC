@@ -2,6 +2,9 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include <math.h>
+#include <unistd.h>
+#include <time.h>
+#include <linux/time.h>
 
 
 // Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
@@ -16,7 +19,23 @@ char* ConvertObjectTypeToString(enum BC_ObjectType type) {
 
 // Fonction faisant office de radar, permet donc de piger les objets proches du joueur et d'afficher leurs informations
 ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, float detection_radius_meters,int *count) {
-    
+    static struct timespec last_ping_time = {0, 0};
+    struct timespec current_time;
+    clock_gettime(CLOCK_MONOTONIC, &current_time);
+
+    // Calculer le temps écoulé depuis le dernier ping en millisecondes
+    long elapsed_time_ms = (current_time.tv_sec - last_ping_time.tv_sec) * 1000 + 
+                           (current_time.tv_nsec - last_ping_time.tv_nsec) / 1000000;
+
+    // Si le dernier ping a été effectué il y a moins de 50 ms, attendre
+    if (elapsed_time_ms < 50) {
+        usleep((50 - elapsed_time_ms) * 1000); // Attendre le temps restant en microsecondes
+        clock_gettime(CLOCK_MONOTONIC, &current_time); // Mettre à jour le temps actuel après l'attente
+    }
+
+    // Mettre à jour le temps du dernier ping
+    last_ping_time = current_time;
+
     BC_List *list = bc_radar_ping(connection);
     BC_List *current = list;
     int object_count = 0;
