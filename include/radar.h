@@ -1,6 +1,8 @@
 #ifndef RADAR_H
 #define RADAR_H
 
+#include "battle_c.h"
+
 // Définition de la structure pour stocker les informations des objets
 typedef struct {
     char* type;
