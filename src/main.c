@@ -1,4 +1,5 @@
 #include "battle_c.h"
+#include "radar.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include <stdio.h>
@@ -7,11 +8,6 @@
 #include <math.h>
 
 // Définition de la structure pour stocker les informations des objets
-typedef struct {
-    char* type;
-    float position_x;
-    float position_y;
-} ObjectInfo;
 
 // Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
 char* ConvertObjectTypeToString(enum BC_ObjectType type) {
