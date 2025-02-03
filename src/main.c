@@ -39,9 +39,7 @@ int main(int argc, char *argv[])
     printf("Fin du radar\n");
     fflush(stdout);
     // Permet de bouger le joueur
-    while(1){
       move_player(conn, 2, 2, 2, player_x, player_y, detection_radius_meters);
-    }
 
   return EXIT_SUCCESS;
 }
