@@ -1,8 +1,10 @@
 #include "battle_c.h"
+#include "radar.h"
+#include "move.h"
+#include "print.h"
+#include "shoot.h"
 #include "stdio.h"
 #include "stdlib.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
@@ -183,8 +185,14 @@ int main(int argc, char *argv[]) {
     float player_x = bc_get_player_data(conn).position.x; 
     float player_y = bc_get_player_data(conn).position.y;
     float detection_radius_meters = 10.0f;
-    detect_and_shoot_nearest_enemy(conn, player_x, player_y, detection_radius_meters);
+
+    // Radar
+    // while(true){
+    int player_count = 0;
+    radar(conn, player_x, player_y, detection_radius_meters, &player_count);
+    // }
     printf("Fin du radar\n");
     fflush(stdout);
-    return EXIT_SUCCESS;
+
+  return EXIT_SUCCESS;
 }
