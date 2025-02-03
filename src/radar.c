@@ -4,6 +4,7 @@
 #include <math.h>
 
 
+
 // Fonction permettant de convertir les types d'object de l'enum en chaine de caractère
 char* ConvertObjectTypeToString(enum BC_ObjectType type) {
     switch (type) {
@@ -44,14 +45,6 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
         BC_MapObject *object = bc_ll_value(current);
         float distance = sqrt(pow(object->position.x - player_x, 2) + pow(object->position.y - player_y, 2));
         if (distance <= detection_radius_meters) {
-            printf("----------------------Nouveau scan----------------------\n");
-            printf("ID : %d\n", object->id);
-            printf("Type : %s\n", ConvertObjectTypeToString(object->type));
-            printf("Vie : %d\n", object->health);
-            printf("Position x: %.2f\n", object->position.x);
-            printf("Position y: %.2f\n", object->position.y);
-
-            // Stocker les informations dans la structure
             object_infos[index].type = ConvertObjectTypeToString(object->type);
             object_infos[index].position_x = object->position.x;
             object_infos[index].position_y = object->position.y;

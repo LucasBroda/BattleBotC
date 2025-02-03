@@ -9,12 +9,6 @@
 #include <math.h>
 
 
-
-
-
-
-
-
 int main(int argc, char *argv[]) {
     BC_Connection *conn = bc_connect("5.135.136.236", 8080);
     if (!conn) {
@@ -27,15 +21,20 @@ int main(int argc, char *argv[]) {
     print_data_current_player(conn);
     float player_x = bc_get_player_data(conn).position.x; 
     float player_y = bc_get_player_data(conn).position.y;
-    float detection_radius_meters = 10.0f;
-
+    float detection_radius_meters = 50.0f;
+    
     // Radar
-    // while(true){
+    while(true){
     int player_count = 0;
-    radar(conn, player_x, player_y, detection_radius_meters, &player_count);
-    // }
-    printf("Fin du radar\n");
+    print_data_current_player(conn);
+    detect_and_shoot_nearest_enemy(conn, player_x, player_y, detection_radius_meters);
+    // Déplacement du joueur
+    move_player(conn, 2.5, 2.5, 0, detection_radius_meters, player_x, player_y);
+    player_x = bc_get_player_data(conn).position.x;
+    player_y = bc_get_player_data(conn).position.y;
     fflush(stdout);
+    usleep(3000000); // Pause de 3 secondes
+  }
 
   return EXIT_SUCCESS;
 }
