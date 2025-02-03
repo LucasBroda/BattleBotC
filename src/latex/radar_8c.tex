@@ -1,0 +1,77 @@
+\doxysection{radar.\+c File Reference}
+\hypertarget{radar_8c}{}\label{radar_8c}\index{radar.c@{radar.c}}
+
+
+Implémentation du radar pour détecter les objets à proximité du joueur.  
+
+
+{\ttfamily \#include "{}radar.\+h"{}}\newline
+{\ttfamily \#include "{}stdio.\+h"{}}\newline
+{\ttfamily \#include "{}stdlib.\+h"{}}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+char \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{radar_8c_ac41cf019c0c00416113cfe0e0e8801fc}{Convert\+Object\+Type\+To\+String}} (enum BC\+\_\+\+Object\+Type type)
+\begin{DoxyCompactList}\small\item\em Convertit un type d\textquotesingle{}objet (enum) en une chaîne de caractères. \end{DoxyCompactList}\item 
+Object\+Info \texorpdfstring{$\ast$}{*} \mbox{\hyperlink{radar_8c_ad921a3907028734c706fb27db6d07c0c}{radar}} (BC\+\_\+\+Connection \texorpdfstring{$\ast$}{*}connection, float player\+\_\+x, float player\+\_\+y, float detection\+\_\+radius\+\_\+meters, int \texorpdfstring{$\ast$}{*}count)
+\begin{DoxyCompactList}\small\item\em Détecte les objets proches du joueur en utilisant un radar. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Implémentation du radar pour détecter les objets à proximité du joueur. 
+
+Ce fichier contient les fonctions permettant de scanner l\textquotesingle{}environnement du joueur, d\textquotesingle{}identifier les objets proches et d\textquotesingle{}afficher leurs informations. 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{radar_8c_ac41cf019c0c00416113cfe0e0e8801fc}\index{radar.c@{radar.c}!ConvertObjectTypeToString@{ConvertObjectTypeToString}}
+\index{ConvertObjectTypeToString@{ConvertObjectTypeToString}!radar.c@{radar.c}}
+\doxysubsubsection{\texorpdfstring{ConvertObjectTypeToString()}{ConvertObjectTypeToString()}}
+{\footnotesize\ttfamily \label{radar_8c_ac41cf019c0c00416113cfe0e0e8801fc} 
+char \texorpdfstring{$\ast$}{*} Convert\+Object\+Type\+To\+String (\begin{DoxyParamCaption}\item[{enum BC\+\_\+\+Object\+Type}]{type}{}\end{DoxyParamCaption})}
+
+
+
+Convertit un type d\textquotesingle{}objet (enum) en une chaîne de caractères. 
+
+\texorpdfstring{$<$}{<} Gestion du radar et détection d\textquotesingle{}objets 
+
+Cette fonction permet d\textquotesingle{}afficher un type d\textquotesingle{}objet sous forme lisible (ex\+: "{}\+PLAYER"{}, "{}\+WALL"{}).
+
+
+\begin{DoxyParams}{Parameters}
+{\em type} & Type de l\textquotesingle{}objet à convertir. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Une chaîne de caractères correspondant au type d\textquotesingle{}objet. 
+\end{DoxyReturn}
+\Hypertarget{radar_8c_ad921a3907028734c706fb27db6d07c0c}\index{radar.c@{radar.c}!radar@{radar}}
+\index{radar@{radar}!radar.c@{radar.c}}
+\doxysubsubsection{\texorpdfstring{radar()}{radar()}}
+{\footnotesize\ttfamily \label{radar_8c_ad921a3907028734c706fb27db6d07c0c} 
+Object\+Info \texorpdfstring{$\ast$}{*} radar (\begin{DoxyParamCaption}\item[{BC\+\_\+\+Connection \texorpdfstring{$\ast$}{*}}]{connection}{, }\item[{float}]{player\+\_\+x}{, }\item[{float}]{player\+\_\+y}{, }\item[{float}]{detection\+\_\+radius\+\_\+meters}{, }\item[{int \texorpdfstring{$\ast$}{*}}]{count}{}\end{DoxyParamCaption})}
+
+
+
+Détecte les objets proches du joueur en utilisant un radar. 
+
+Cette fonction effectue un scan de l\textquotesingle{}environnement du joueur, récupère les objets à proximité dans un rayon donné et affiche leurs informations. Elle retourne également un tableau d\textquotesingle{}objets détectés.
+
+
+\begin{DoxyParams}{Parameters}
+{\em connection} & Pointeur vers la connexion au serveur de jeu. \\
+\hline
+{\em player\+\_\+x} & Position actuelle du joueur sur l\textquotesingle{}axe X. \\
+\hline
+{\em player\+\_\+y} & Position actuelle du joueur sur l\textquotesingle{}axe Y. \\
+\hline
+{\em detection\+\_\+radius\+\_\+meters} & Rayon de détection en mètres. \\
+\hline
+{\em count} & Pointeur pour stocker le nombre d\textquotesingle{}objets détectés. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Un tableau d\textquotesingle{}objets détectés (Object\+Info\texorpdfstring{$\ast$}{*}), à libérer après usage. 
+\end{DoxyReturn}
+Liste des objets détectés par le radar
