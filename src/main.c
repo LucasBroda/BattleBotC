@@ -1,5 +1,8 @@
 #include "battle_c.h"
 #include "radar.h"
+#include "move.h"
+#include "print.h"
+#include "shoot.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include <string.h>
