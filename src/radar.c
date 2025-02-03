@@ -55,6 +55,7 @@ ObjectInfo* radar(BC_Connection *connection, float player_x, float player_y, flo
             object_infos[index].type = ConvertObjectTypeToString(object->type);
             object_infos[index].position_x = object->position.x;
             object_infos[index].position_y = object->position.y;
+            object_infos[index].id = object->id;
 
             index++;
             fflush(stdout);

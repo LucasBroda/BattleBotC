@@ -8,6 +8,7 @@ typedef struct {
     char* type;
     float position_x;
     float position_y;
+    float id;
 } ObjectInfo;
 
 char* ConvertObjectTypeToString(enum BC_ObjectType type);
